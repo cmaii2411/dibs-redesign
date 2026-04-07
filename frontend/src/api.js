@@ -6,5 +6,18 @@ const api = axios.create({
 
 export const getLibraries = () => api.get('/libraries')
 export const getRooms = (libraryId) => api.get(`/libraries/${libraryId}/rooms`)
-export const getAvailability = (roomId, date) => api.get(`/rooms/${roomId}/availability?date=${date}`)
+export const getLibraryAvailability = (libraryId, date, capacity) => {
+  const params = new URLSearchParams({ date })
+  if (capacity) {
+    params.append('capacity', capacity)
+  }
+  return api.get(`/libraries/${libraryId}/rooms/availability?${params}`)
+}
 export const createBooking = (data) => api.post('/reserve', data)
+export const searchLibraries = (date, start, capacity) => {
+  const params = new URLSearchParams({date, start})
+  if (capacity) {
+    params.append('capacity', capacity)
+  }
+  return api.get(`/libraries/search/?${params}`)
+}
