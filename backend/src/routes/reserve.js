@@ -3,22 +3,22 @@ const pool = require('../db')
 
 router.post('/', async (req, res) => {
   try {
-    const { booking_name, email, room_id, start_time } = req.body
+    const { booking_name, email, room_id, date, start_time } = req.body
 
     // 1. Look up user by email
     const userResult = await pool.query(
-      `SELECT id FROM "User" 
+      `SELECT id FROM "User"
        WHERE email = $1`, [email]
     )
 
     if (userResult.rows.length === 0) {
       return res.status(404).json({error: 'User not found'})
-    } 
+    }
 
     const user_id = userResult.rows[0].id
 
-    // 2. Calculate end time (always +2hrs)
-    const start = new Date(start_time)
+    // 2. Combine date + start_time and calculate end time (+2hrs)
+    const start = new Date(`${date}T${start_time}:00`)
     const end = new Date(start.getTime() + 2 * 60 * 60 * 1000)
 
     // 3. Check slot is still available (overlap check)
